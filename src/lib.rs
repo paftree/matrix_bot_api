@@ -89,7 +89,7 @@ impl MatrixBot {
         M: handlers::MessageHandler + 'static + Send,
     {
         let (tx, rx): (Sender<BKResponse>, Receiver<BKResponse>) = channel();
-        let bk = Backend::new(tx)
+        let bk = Backend::new(tx);
         let tk = bk.data.lock().unwrap().access_token.clone();
         // Here it would be ideal to extend fractal_matrix_api in order to be able to give
         // sync a limit-parameter.
@@ -97,7 +97,7 @@ impl MatrixBot {
         // Not interested in any messages since login
         bk.data.lock().unwrap().since = Some(Local::now().to_string());
         MatrixBot {
-            tk: tk,
+            tk: Some(tk),
             backend: bk.run(),
             rx,
             uid: None,
