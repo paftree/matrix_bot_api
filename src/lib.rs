@@ -233,7 +233,7 @@ impl MatrixBot {
 /// and shutting down the bot
 #[derive(Clone)]
 pub struct ActiveBot {
-    backend: Sender<BKCommand>,
+    pub backend: Sender<BKCommand>,
     uid: Option<String>,
     verbose: bool,
 }
