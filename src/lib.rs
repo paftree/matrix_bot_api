@@ -249,7 +249,7 @@ impl ActiveBot {
         self.backend.send(BKCommand::ShutDown).unwrap();
     }
     
-    pub fn get_tk(&self) -> Option<String) {
+    pub fn get_tk(&self) -> Option<String> {
         return self.tk;
     }   
 
