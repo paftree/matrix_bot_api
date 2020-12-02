@@ -248,6 +248,10 @@ impl ActiveBot {
     pub fn shutdown(&self) {
         self.backend.send(BKCommand::ShutDown).unwrap();
     }
+    
+    pub fn get_tk(&self) -> Option<String) {
+        return self.tk;
+    }   
 
     /// Will leave the given room (give room-id, not room-name)
     pub fn leave_room(&self, room_id: &str) {
