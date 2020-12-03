@@ -251,7 +251,7 @@ impl ActiveBot {
     }
     
     pub fn get_tk(&self) -> String {
-        match self.tk {
+        match &self.tk {
             Some(tk) => tk.clone(),
             _ => "".to_string()
         }
