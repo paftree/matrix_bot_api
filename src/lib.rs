@@ -153,7 +153,7 @@ impl MatrixBot {
                 homeserver_url.to_string(),
             ))
             .unwrap();
-        self.tk = self.bk.data.lock().unwrap().access_token.clone();
+        self.tk = Some(self.bk.data.lock().unwrap().access_token.clone());
         let mut active_bot = self.get_activebot_clone();
 
         for handler in self.handlers.iter_mut() {
@@ -253,7 +253,7 @@ impl ActiveBot {
     pub fn get_tk(&self) -> String {
         match self.tk {
             Some(tk) => tk.clone(),
-            _ => None
+            _ => ""
         }
     }   
 
