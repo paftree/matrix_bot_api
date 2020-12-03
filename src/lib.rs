@@ -95,11 +95,9 @@ impl MatrixBot {
         // Until then, the workaround is to send "since" of the backend to "now".
         // Not interested in any messages since login
         bk.data.lock().unwrap().since = Some(Local::now().to_string());
-        let backend = bk.run();
-        let tk = Some(bk.data.lock().unwrap().access_token.clone());
         MatrixBot {
-            tk: tk,
-            backend: backend,
+            tk: None,
+            backend: bk.run(),
             rx,
             uid: None,
             verbose: false,
@@ -154,7 +152,7 @@ impl MatrixBot {
             ))
             .unwrap();
         let mut active_bot = self.get_activebot_clone();
-
+        //let tk = Some(self.backend.  .data.lock().unwrap().access_token.clone());
         for handler in self.handlers.iter_mut() {
             handler.init_handler(&active_bot);
         }
@@ -177,9 +175,13 @@ impl MatrixBot {
             BKResponse::UpdateRooms(x) => self.handle_rooms(x),
             //BKResponse::Rooms(x, _) => self.handle_rooms(x),
             BKResponse::RoomMessages(x) => self.handle_messages(x, active_bot),
-            BKResponse::Token(uid, _, _) => {
+            BKResponse::Token(uid, tk, _) => {
+                println!("Uid: {}",uid.clone());
+                //println!("Thing2: {:#?}",thing2.clone());
                 self.uid = Some(uid); // Successful login
+                self.tk = Some(tk);
                 active_bot.uid = self.uid.clone();
+                active_bot.tk = self.tk.clone();
                 self.backend.send(BKCommand::Sync(None, true)).unwrap();
             }
             BKResponse::Sync(_) => self.backend.send(BKCommand::Sync(None, false)).unwrap(),
