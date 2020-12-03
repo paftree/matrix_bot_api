@@ -74,7 +74,6 @@ pub enum MessageType {
 
 pub struct MatrixBot {
     tk: Option<String>,
-    bk: Backend,
     backend: Sender<BKCommand>,
     rx: Receiver<BKResponse>,
     uid: Option<String>,
@@ -96,10 +95,11 @@ impl MatrixBot {
         // Until then, the workaround is to send "since" of the backend to "now".
         // Not interested in any messages since login
         bk.data.lock().unwrap().since = Some(Local::now().to_string());
+        let backend = bk.run();
+        let tk = Some(bk.data.lock().unwrap().access_token.clone());
         MatrixBot {
-            tk: None,
-            bk: bk,
-            backend: bk.run(),
+            tk: tk,
+            backend: backend,
             rx,
             uid: None,
             verbose: false,
@@ -153,7 +153,6 @@ impl MatrixBot {
                 homeserver_url.to_string(),
             ))
             .unwrap();
-        self.tk = Some(self.bk.data.lock().unwrap().access_token.clone());
         let mut active_bot = self.get_activebot_clone();
 
         for handler in self.handlers.iter_mut() {
