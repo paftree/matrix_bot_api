@@ -250,7 +250,7 @@ impl ActiveBot {
     }
     
     pub fn get_tk(&self) -> String {
-        return self.tk;
+        return self.tk.clone();
     }   
 
     /// Will leave the given room (give room-id, not room-name)
