@@ -73,7 +73,7 @@ pub enum MessageType {
 }
 
 pub struct MatrixBot {
-    tk: Option<String>,
+    tk: String,
     backend: Sender<BKCommand>,
     rx: Receiver<BKResponse>,
     uid: Option<String>,
@@ -97,7 +97,7 @@ impl MatrixBot {
         // Not interested in any messages since login
         bk.data.lock().unwrap().since = Some(Local::now().to_string());
         MatrixBot {
-            tk: Some(tk),
+            tk: tk,
             backend: bk.run(),
             rx,
             uid: None,
@@ -237,7 +237,7 @@ impl MatrixBot {
 /// and shutting down the bot
 #[derive(Clone)]
 pub struct ActiveBot {
-    tk: Option<String>,
+    tk: String,
     backend: Sender<BKCommand>,
     uid: Option<String>,
     verbose: bool,
