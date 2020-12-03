@@ -73,7 +73,8 @@ pub enum MessageType {
 }
 
 pub struct MatrixBot {
-    tk: String,
+    tk: Option<String>,
+    bk: Backend,
     backend: Sender<BKCommand>,
     rx: Receiver<BKResponse>,
     uid: Option<String>,
@@ -90,14 +91,14 @@ impl MatrixBot {
     {
         let (tx, rx): (Sender<BKResponse>, Receiver<BKResponse>) = channel();
         let bk = Backend::new(tx);
-        let tk = bk.data.lock().unwrap().access_token.clone();
         // Here it would be ideal to extend fractal_matrix_api in order to be able to give
         // sync a limit-parameter.
         // Until then, the workaround is to send "since" of the backend to "now".
         // Not interested in any messages since login
         bk.data.lock().unwrap().since = Some(Local::now().to_string());
         MatrixBot {
-            tk: tk,
+            tk: None,
+            bk: bk,
             backend: bk.run(),
             rx,
             uid: None,
@@ -152,7 +153,7 @@ impl MatrixBot {
                 homeserver_url.to_string(),
             ))
             .unwrap();
-
+        self.tk = self.bk.data.lock().unwrap().access_token.clone();
         let mut active_bot = self.get_activebot_clone();
 
         for handler in self.handlers.iter_mut() {
@@ -237,7 +238,7 @@ impl MatrixBot {
 /// and shutting down the bot
 #[derive(Clone)]
 pub struct ActiveBot {
-    tk: String,
+    tk: Option<String>,
     backend: Sender<BKCommand>,
     uid: Option<String>,
     verbose: bool,
@@ -250,7 +251,10 @@ impl ActiveBot {
     }
     
     pub fn get_tk(&self) -> String {
-        return self.tk.clone();
+        match self.tk {
+            Some(tk) => tk.clone(),
+            _ => None
+        }
     }   
 
     /// Will leave the given room (give room-id, not room-name)
